@@ -518,6 +518,22 @@
 
         const fileLink = document.createElement('a');
         fileLink.textContent = file.filename;
+        // New Add [K]
+        if (file.type && file.type.startsWith('Generate')) {
+          const generatedTag = document.createElement('span');
+          generatedTag.textContent = 'Generated';
+          generatedTag.style.cssText = `
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+            border: 1px solid #bbdefb;
+          `;
+          fileLink.appendChild(generatedTag);
+        }
+        // End of New Add [K]
         fileLink.href = '#';
         fileLink.addEventListener('click', () => showAnalysis(fileID));
 

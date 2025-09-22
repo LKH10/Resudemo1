@@ -50,6 +50,10 @@
       {
         "source": "/generateNewAnalysis",
       	"function": "generateNewAnalysis"
+      },
+      {
+        "source": "/generatePdf",
+      	"function": "generatePdf"
       }
     ]
   },
