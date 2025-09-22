@@ -6,6 +6,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500&display=swap" rel="stylesheet">
   <title>Dashboard</title>
   <style>
+    @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-R.ttf')  format('truetype'); font-weight: normal; font-style: normal; }
+    @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-B.ttf')  format('truetype'); font-weight: bold;   font-style: normal; }
+    @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-RI.ttf') format('truetype'); font-weight: normal; font-style: italic; }
+    @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-BI.ttf') format('truetype'); font-weight: bold;   font-style: italic;}
+
     body {
       font-family: 'Shippori Mincho B1', Arial, sans-serif;
       margin: 0;
@@ -60,7 +65,7 @@
     }
 
     .file-item {
-      border: 1px solid #ddd;
+      border: 1.5px solid #ddd;
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 10px;
@@ -91,6 +96,12 @@
       margin: 20px 0;
     }
 
+    /* New Add [H] */
+    .gen-tag, .upload-button, .gen-res-button, .action-button, .post-button, .generate-button {
+      font-family: Ubuntu, 'Shippori Mincho B1', Arial, sans-serif;
+    }
+    /* End of New Add [H] */
+
     .upload-button {
       display: block;
       margin: 30px auto;
@@ -100,12 +111,33 @@
       text-align: center;
       text-decoration: none;
       font-size: 16px;
+      font-weight: bold;
       border-radius: 5px;
     }
 
     .upload-button:hover {
       background-color: #0056b3;
     }
+
+    /* New Add [L] */
+    .gen-res-button {
+      display: block;
+      margin: 30px auto;
+      margin-top: -15px;
+      padding: 10px 20px;
+      background-color: #ff8b44;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .gen-res-button:hover {
+      background-color: #e47c3b;
+    }
+    /* End of New Add [L] */
 
     .popup-overlay {
       position: fixed;
@@ -335,7 +367,7 @@
     /* End of New Add [G] */
 
     .action-button {
-      padding: 8px 16px;
+      padding: 9px 16px;
       border: none;
       border-radius: 5px;
       font-size: 14px;
@@ -359,12 +391,72 @@
       background-color: #059669;
     }
 
+    /* New Add [H] */
+    .mp-button-container {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* spacing between buttons */
+    }
+
+    .gen-tag {
+      background-color: #FFFFFF;
+      /* color: #3465a4; */
+      color: #007bff;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 10px;
+      vertical-align: center;
+      border: 2px solid #007bff;
+    }
+
+    .download-button {
+      padding: 9px 9px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      background-color: #E0E0E0;
+      margin-right: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      /* display: flex;           /* Add this */
+      align-items: center;     /* Add this */
+      justify-content: center; /* Add this */
+    }
+
+    .download-button:hover {
+      background-color: #D0D0D0;
+    }
+    /* End of New Add [H] */
+
     .analysis-info {
       margin-top: 15px;
       font-size: 12px;
       color: #6b7280;
       text-align: center;
     }
+
+    /* New Add [M] */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    /* End of New Add [M] */
 
   </style>
 </head>
@@ -382,7 +474,10 @@
     <ul id="fileList" class="file-list"></ul>
     <p id="noFilesMessage" class="no-files" style="display: none;">You have no files.</p>
     <a href="/upload.html" class="upload-button">Upload New File</a>
+    <a href="/gen0.html" class="gen-res-button">Create a Resume</a>
   </div>
+
+  <div id="toast" class="toast"></div> <!-- New Add [M] -->
 
   <!-- Popup Window -->
   <div class="popup-overlay" id="popupOverlay">
@@ -410,12 +505,14 @@
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="config.js"></script>
 
   <script>
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const fileList = document.getElementById('fileList');
     const noFilesMessage = document.getElementById('noFilesMessage');
@@ -491,6 +588,80 @@
     //   }
     // }
 
+    // New Add [L]
+    // async function downloadFile(fileID, filename) {
+    //   try {
+    //     // Get a reference to the file in Firebase Storage
+    //     const storage = getStorage();
+    //     const fileRef = ref(storage, `uploads/${fileID}`);
+
+    //     // Get the download URL
+    //     const downloadURL = await getDownloadURL(fileRef);
+
+    //     // Create a temporary anchor element to trigger download
+    //     const link = document.createElement('a');
+    //     link.href = downloadURL;
+    //     link.download = filename; // This suggests the filename for download
+    //     link.style.display = 'none';
+
+    //     // Append to body, click, and remove
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);          
+    //   } catch (error) {
+    //       console.error('Error downloading file:', error);
+    //       alert('Failed to download file. Please try again.');
+    //   }
+    // }
+    async function downloadFile(fileID, filename) {
+      try {
+        const user = auth.currentUser;
+        if (!user) {alert('Please log in to download files.'); return; }
+        const userID = user.uid;
+
+        const fileDoc = await db.collection('file').doc(fileID).get();
+        if (!fileDoc.exists) {alert('File not found.'); return; }
+
+        const fileData = fileDoc.data();
+        if (fileData.owner !== userID) {alert('You do not have permission to download this file.'); return; }
+
+        const storagePath = fileData.path;
+        const fileRef = storage.ref(storagePath);
+        const downloadURL = await fileRef.getDownloadURL();
+
+        const link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = filename || fileData.filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log('File downloaded successfully:', filename);
+
+      } catch (error) {
+        console.error('Error downloading file:', error);
+
+        if (error.code === 'storage/object-not-found') {alert('File not found in storage.'); }
+        else if (error.code === 'storage/unauthorized') {alert('You do not have permission to access this file.'); }
+        else if (error.code === 'permission-denied') {alert('Permission denied. Please check your access rights.'); }
+        else {alert('An error occurred while downloading the file. Please try again.'); }
+      }
+    }
+    // End of New Add [L]
+
+    // New Add [M]
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+          toast.classList.remove('show');
+      }, duration);
+    }
+    // End of New Add [M]
+
     // Load user files
     async function loadFiles() {
       const user = auth.currentUser;
@@ -508,7 +679,7 @@
 
       const fileIDs = userDoc.data().files;
 
-      for (const fileID of fileIDs) {
+      for (const fileID of [...fileIDs].reverse()) {
         const fileDoc = await db.collection('file').doc(fileID).get();
         if (!fileDoc.exists) continue;
 
@@ -516,28 +687,39 @@
         const listItem = document.createElement('li');
         listItem.className = 'file-item';
 
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'mp-button-container';
+
         const fileLink = document.createElement('a');
         fileLink.textContent = file.filename;
+        fileLink.href = '#';
+        fileLink.addEventListener('click', () => showAnalysis(fileID));
+        listItem.appendChild(fileLink);
         // New Add [K]
         if (file.type && file.type.startsWith('Generate')) {
           const generatedTag = document.createElement('span');
+          generatedTag.className = 'gen-tag';
           generatedTag.textContent = 'Generated';
-          generatedTag.style.cssText = `
-            background-color: #e3f2fd;
-            color: #1976d2;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-left: 8px;
-            border: 1px solid #bbdefb;
-          `;
+
           fileLink.appendChild(generatedTag);
+
+          const downloadButton = document.createElement('button');
+          downloadButton.className = 'download-button';
+          downloadButton.innerHTML = '<img src="./static/icon/DownloadIcon.png" alt="Download" style="width: 16px; height: 16px; display: block;">';
+          downloadButton.addEventListener('click', () => {
+              // Add your download logic here
+              downloadFile(fileID, file.filename);
+              console.log('Download file:', file.filename);
+              // Example: window.open(file.downloadUrl, '_blank');
+          });
+
+          // const viewAnalysisBtn = document.querySelector('.view-analysis-btn'); // Adjust selector as needed
+          // viewAnalysisBtn.parentNode.insertBefore(downloadButton, viewAnalysisBtn);
+          // listItem.appendChild(downloadButton);
+          buttonContainer.appendChild(downloadButton);
         }
         // End of New Add [K]
-        fileLink.href = '#';
-        fileLink.addEventListener('click', () => showAnalysis(fileID));
 
-        listItem.appendChild(fileLink);
 
         // Create button instead of rocket emoji
         const actionButton = document.createElement('button');
@@ -552,7 +734,9 @@
           actionButton.disabled = true;
         }
 
-        listItem.appendChild(actionButton);
+        // listItem.appendChild(actionButton);
+        buttonContainer.appendChild(actionButton);
+        listItem.appendChild(buttonContainer);
         fileList.appendChild(listItem);
       }
     }
@@ -1000,7 +1184,9 @@
         }
 
         const { newAnalysisID } = await response.json();
-        alert(`New analysis (${newAnalysisID}) has been generated.`);
+        showToast(`New analysis (${newAnalysisID}) has been generated.`); // New Add [M]
+        // alert(`New analysis (${newAnalysisID}) has been generated.`);
+        // alert(`New analysis has been generated.`);
         await showAnalysis(currentFileID);
 
       } catch (error) {

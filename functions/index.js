@@ -595,7 +595,9 @@ Page numbers: ${pageNumbers !== false}`;
         .replace("T", "-")
         .replace("Z", "");
 
-    const pdfTitle = title || "Resume";
+    // const pdfTitle = title || "Resume.pdf";
+    const baseTitle = title || "Resume.pdf";
+    const pdfTitle = baseTitle.toLowerCase().endsWith(".pdf") ? baseTitle : baseTitle + ".pdf";
     const fileName = `${pdfTitle}-${timestamp}.pdf`;
     const filePath = `${userId}/${fileName}`;
 

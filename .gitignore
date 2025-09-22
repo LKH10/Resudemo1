@@ -70,3 +70,5 @@ node_modules/
 
 # API Keys
 public/config.js
+
+*.ttf
