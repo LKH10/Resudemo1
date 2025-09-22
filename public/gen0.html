@@ -207,9 +207,12 @@
         const auth = firebase.auth();
         const storage = firebase.storage();
         const db = firebase.firestore();
-
-        const user = auth.currentUser;
-        if (!user) {alert('You need to log in to view your files.'); }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            }
+        });
 
         // Add education entry
         function addEducation() {

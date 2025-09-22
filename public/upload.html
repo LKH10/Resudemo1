@@ -87,6 +87,12 @@
         const auth = firebase.auth();
         const storage = firebase.storage();
         const db = firebase.firestore();
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            }
+        });
 
         const fileInput = document.getElementById('fileInput');
         const uploadButton = document.getElementById('uploadButton');
