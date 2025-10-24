@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Generator</title>
+    <style>
+        @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-R.ttf')  format('truetype'); font-weight: normal; font-style: normal; }
+        @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-B.ttf')  format('truetype'); font-weight: bold;   font-style: normal; }
+        @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-RI.ttf') format('truetype'); font-weight: normal; font-style: italic; }
+        @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-BI.ttf') format('truetype'); font-weight: bold;   font-style: italic;}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
+            font-family: Ubuntu, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            font-weight: 400;
+        }
+
+        .generate-btn {
+            background: #ff8b44;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .generate-btn:hover {
+            background: #ff7700;
+        }
+
+        /* .card-container {
+            display: flex;
+            align-items: stretch;
+            padding: 40px 20px;
+            min-height: calc(100vh - 200px);
+            overflow-x: hidden;
+            gap: 25px;
+            transition: transform 0.3s ease;
+        } */
+
+        .card-container {
+            display: flex;
+            align-items: stretch;
+            padding: 40px 0; /* Remove horizontal padding */
+            min-height: calc(100vh - 200px);
+            overflow-x: visible; /* Change from hidden to visible */
+            gap: 15px;
+            transition: transform 0.3s ease;
+            width: max-content; /* Add this */
+            margin-left: 20px; /* Add initial left margin */
+        }
+
+        /* Add a wrapper for proper viewport control */
+        .card-viewport {
+            width: 100vw;
+            overflow: hidden;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #ddd;
+            border-radius: 12px;
+            padding: 30px;
+            min-width: 800px;
+            max-width: 800px;
+            flex-shrink: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            /* align-self: center; */
+            margin-top: auto;
+            margin-bottom: auto;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 40px;
+        }
+
+        .add-section {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .add-section::before,
+        .add-section::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #999;
+        }
+
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:not(.disabled):hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-btn span {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .nav-btn.disabled span {
+            color: #999;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            min-width: 400px;
+            position: relative;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .modal .form-group input {
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn {
+            background: #999;
+            color: white;
+        }
+
+        .modal-generate-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .modal-generate-btn.generating {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .modal-generate-btn.success {
+            background: #2196F3;
+        }
+
+        .modal-generate-btn.error {
+            background: #ff8c00;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .entry-section {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .entry-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Generate</h1>
+        <button class="generate-btn" onclick="showGenerateModal()">Generate!</button>
+    </div>
+
+    <div class="card-viewport">
+        <div class="card-container" id="cardContainer">
+            <!-- Background Card -->
+            <div class="card" data-card="background">
+                <h2>Background</h2>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="name" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="email" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Number:</label>
+                    <input type="tel" id="phone" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Additional Number:</label>
+                    <input type="tel" id="additionalPhone" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Personal Page:</label>
+                    <input type="url" id="personalPage" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn Link:</label>
+                    <input type="url" id="linkedinLink" placeholder="">
+                </div>
+            </div>
+    
+            <!-- Introduction Card -->
+            <div class="card" data-card="introduction">
+                <h2>Introduction</h2>
+                <div class="form-group">
+                    <textarea id="summary" placeholder="Write your professional summary here..."></textarea>
+                </div>
+            </div>
+    
+            <!-- Education Experience Card -->
+            <div class="card" data-card="education">
+                <h2>Education Experience</h2>
+                <div id="educationEntries">
+                    <div class="entry-section">
+                        <div class="entry-title">Education 1</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="education-school" placeholder="Level, School Name">
+                            </div>
+                            <div class="form-group" style="flex: 0.3;">
+                                <input type="text" class="education-year" placeholder="Year Obtained">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="education-description" placeholder="Briefly describe your achievement"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-section">
+                    <button class="add-btn" onclick="addEducation()">+</button>
+                </div>
+            </div>
+    
+            <!-- Work Experience Card -->
+            <div class="card" data-card="work">
+                <h2>Work Experience</h2>
+                <div id="workEntries">
+                    <div class="entry-section">
+                        <div class="entry-title">Work Experience 1</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="work-title" placeholder="Title, Company">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="work-description" placeholder="Describe your role and achievements"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-section">
+                    <button class="add-btn" onclick="addWork()">+</button>
+                </div>
+            </div>
+    
+            <!-- Project Experience Card -->
+            <div class="card" data-card="projects">
+                <h2>Project Experience</h2>
+                <div id="projectEntries">
+                    <div class="entry-section">
+                        <div class="entry-title">Project 1</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="project-title" placeholder="Project Title">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="project-description" placeholder="Describe the project and your role"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-section">
+                    <button class="add-btn" onclick="addProject()">+</button>
+                </div>
+            </div>
+    
+            <!-- Publications Card -->
+            <div class="card" data-card="publications">
+                <h2>Publications</h2>
+                <div id="publicationEntries">
+                    <div class="entry-section">
+                        <div class="entry-title">Publication 1</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="publication-title" placeholder="Publication Title">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="publication-description" placeholder="Publication details"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-section">
+                    <button class="add-btn" onclick="addPublication()">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="navigateCard(-1)">
+            <img src="static/icon/DoubleLeft-Black.png" alt="Previous" id="prevIcon">
+            <span>Previous</span>
+        </button>
+        <button class="nav-btn" id="nextBtn" onclick="navigateCard(1)">
+            <span>Next</span>
+            <img src="static/icon/DoubleRight-Black.png" alt="Next" id="nextIcon">
+        </button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h3 id="modalTitle">Document name:</h3>
+            <div class="form-group">
+                <input type="text" id="filename" placeholder="Filename..." value="">
+                <span>.pdf</span>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
+                <!-- <button class="modal-btn modal-generate-btn" id="modalGenerateBtn" onclick="generatePDF()">Generate</button> -->
+                <button class="modal-btn modal-generate-btn" id="modalGenerateBtn" onclick="submitResumeData()">Generate</button>
+                <!-- <button class="modal-btn modal-generate-btn" id="modalGenerateBtn" onclick="document.getElementById('resumeForm').dispatchEvent(new Event('submit'))">Generate</button> -->
+            </div>
+        </div>
+    </div>
+
+    <div id="result" style="display: none;"></div> <!-- fix -->
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+
+
+    <script>
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const db = firebase.firestore();
+        let userID = null;
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            }
+        });
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            } else {
+                // const userID = user.uid;
+                userID = user.uid;
+            }
+        });
+
+
+
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+        const totalCards = cards.length;
+
+        // function updateCardPosition() {
+        //     const container = document.getElementById('cardContainer');
+        //     const cardWidth = 815; // 800px + 15px gap
+        //     const translateX = -currentCard * cardWidth;
+        //     container.style.transform = `translateX(${translateX}px)`;
+            
+        //     updateNavigationButtons();
+        // }
+
+        function updateCardPosition() {
+            const container = document.getElementById('cardContainer');
+            const cardWidth = 815; // 800px + 15px gap
+            const viewportWidth = window.innerWidth;
+            const startOffset = 20; // Initial margin
+            
+            // Calculate translation to keep current card properly positioned
+            const translateX = startOffset - (currentCard * cardWidth);
+            container.style.transform = `translateX(${translateX}px)`;
+            
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevIcon = document.getElementById('prevIcon');
+            const nextIcon = document.getElementById('nextIcon');
+            
+            // Update previous button
+            if (currentCard === 0) {
+                prevBtn.classList.add('disabled');
+                prevIcon.src = 'static/icon/DoubleLeft-Gray.png';
+            } else {
+                prevBtn.classList.remove('disabled');
+                prevIcon.src = 'static/icon/DoubleLeft-Black.png';
+            }
+            
+            // Update next button
+            if (currentCard === totalCards - 1) {
+                nextBtn.classList.add('disabled');
+                nextIcon.src = 'static/icon/DoubleRight-Gray.png';
+            } else {
+                nextBtn.classList.remove('disabled');
+                nextIcon.src = 'static/icon/DoubleRight-Black.png';
+            }
+        }
+
+        function navigateCard(direction) {
+            const newCard = currentCard + direction;
+            if (newCard >= 0 && newCard < totalCards) {
+                currentCard = newCard;
+                updateCardPosition();
+            }
+        }
+
+        function removeEntry(button) {
+            const entry = button.closest('.entry-section');
+            const container = entry.parentNode;
+            if (container.children.length > 1) {
+                entry.remove();
+                updateEntryTitles(container);
+            }
+        }
+
+        function updateEntryTitles(container) {
+            const entries = container.querySelectorAll('.entry-section');
+            const type = container.id.replace('Entries', '');
+            entries.forEach((entry, index) => {
+                const title = entry.querySelector('.entry-title');
+                const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
+                title.textContent = `${capitalizedType} ${index + 1}`;
+            });
+        }
+
+        function addEducation() {
+            const container = document.getElementById('educationEntries');
+            const count = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'entry-section';
+            entry.innerHTML = `
+                <div class="entry-title">Education ${count}</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="education-school" placeholder="Level, School Name">
+                    </div>
+                    <div class="form-group" style="flex: 0.3;">
+                        <input type="text" class="education-year" placeholder="Year Obtained">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="form-group">
+                    <textarea class="education-description" placeholder="Briefly describe your achievement"></textarea>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+
+        function addWork() {
+            const container = document.getElementById('workEntries');
+            const count = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'entry-section';
+            entry.innerHTML = `
+                <div class="entry-title">Work Experience ${count}</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="work-title" placeholder="Title, Company">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="form-group">
+                    <textarea class="work-description" placeholder="Describe your role and achievements"></textarea>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+
+        function addProject() {
+            const container = document.getElementById('projectEntries');
+            const count = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'entry-section';
+            entry.innerHTML = `
+                <div class="entry-title">Project ${count}</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="project-title" placeholder="Project Title">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="form-group">
+                    <textarea class="project-description" placeholder="Describe the project and your role"></textarea>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+
+        function addPublication() {
+            const container = document.getElementById('publicationEntries');
+            const count = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'entry-section';
+            entry.innerHTML = `
+                <div class="entry-title">Publication ${count}</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="publication-title" placeholder="Publication Title">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="form-group">
+                    <textarea class="publication-description" placeholder="Publication details"></textarea>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+
+        function showGenerateModal() {
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            // Reset modal state
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBtn = document.getElementById('modalGenerateBtn');
+            modalTitle.textContent = 'Document name:';
+            modalBtn.textContent = 'Generate';
+            modalBtn.className = 'modal-btn modal-generate-btn';
+        }
+
+        // // Helper function to collect data from all cards
+        // function collectAllFormData() {
+        //     const data = {};
+            
+        //     // Get all form elements across all cards
+        //     const allInputs = document.querySelectorAll('input, textarea, select');
+            
+        //     allInputs.forEach(input => {
+        //         if (input.name) {
+        //             if (input.type === 'checkbox') {
+        //                 data[input.name] = input.checked;
+        //             } else if (input.type === 'radio') {
+        //                 if (input.checked) {
+        //                     data[input.name] = input.value || '';
+        //                 }
+        //             } else {
+        //                 data[input.name] = input.value || '';
+        //             }
+        //         }
+        //     });
+            
+        //     return data;
+        // }
+
+        // function collectFormData() {
+        //     console.log("User ID: ", userID);
+        //     const data = {
+        //         phone: document.getElementById('phone').value || '',
+        //         name: document.getElementById('name').value || '',
+        //         email: document.getElementById('email').value || '',
+        //         summary: document.getElementById('summary').value || '',
+        //         additionalPhone: document.getElementById('additionalPhone').value || '',
+        //         personalPage: document.getElementById('personalPage').value || '',
+        //         linkedinLink: document.getElementById('linkedinLink').value || '',
+        //         userId: userID,
+        //         education: [],
+        //         workExperience: [],
+        //         projectExperience: [],
+        //         publications: [],
+        //         title: document.getElementById('filename').value || new Date().toISOString().slice(0,19).replace('T','-').replace(/:/g,'-')
+        //     };
+
+        //     document.querySelectorAll('#educationEntries .entry-section').forEach(entry => {
+        //         data.education.push({
+        //             school: entry.querySelector('.education-school').value || '',
+        //             year: entry.querySelector('.education-year').value || '',
+        //             description: entry.querySelector('.education-description').value || ''
+        //         });
+        //     });
+            
+        //     // Collect work entries
+        //     document.querySelectorAll('#workEntries .entry-section').forEach(entry => {
+        //         data.workExperience.push({
+        //             title: entry.querySelector('.work-title').value || '',
+        //             description: entry.querySelector('.work-description').value || ''
+        //         });
+        //     });
+            
+        //     // Collect project entries
+        //     document.querySelectorAll('#projectEntries .entry-section').forEach(entry => {
+        //         data.projectExperience.push({
+        //             title: entry.querySelector('.project-title').value || '',
+        //             description: entry.querySelector('.project-description').value || ''
+        //         });
+        //     });
+            
+        //     // Collect publication entries
+        //     document.querySelectorAll('#publicationEntries .entry-section').forEach(entry => {
+        //         data.publications.push({
+        //             title: entry.querySelector('.publication-title').value || '',
+        //             description: entry.querySelector('.publication-description').value || ''
+        //         });
+        //     });
+            
+        //     return data;
+        // }
+
+        // // Initialize the page
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     updateCardPosition();
+        // });
+
+        // async function generatePDF() {
+        //     // const data = collectAllFormData();
+        //     const data = collectFormData();
+            
+        //     const resultDiv = document.getElementById('result');
+        //     if (!resultDiv) {
+        //         console.error('Result div not found');
+        //         alert('Error: Result display area not found');
+        //         return;
+        //     }
+            
+        //     resultDiv.style.display = 'block';
+        //     resultDiv.innerHTML = 'Generating PDF...';
+        //     resultDiv.className = '';
+
+        //     try {
+        //         const functionUrl = '/generatePdf';
+
+        //         const response = await fetch(functionUrl, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(data)
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (response.ok && result.success) {
+        //             resultDiv.className = 'success';
+        //             resultDiv.innerHTML = `
+        //                 <h3>PDF Generated Successfully!</h3>
+        //                 <p><strong>File ID:</strong> ${result.fileID}</p>
+        //                 <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
+        //             `;
+        //         } else {
+        //             resultDiv.className = 'error';
+        //             resultDiv.innerHTML = `<h3>Error: ${result.error || 'Unknown error'}</h3>`;
+        //         }
+        //     } catch (error) {
+        //         resultDiv.className = 'error';
+        //         resultDiv.innerHTML = `<h3>Network Error: ${error.message}</h3>`;
+        //     }
+        // }
+
+        // Comprehensive data parsing and submission functions based on gen0.html structure
+
+        function parsePersonalInformation() {
+            return {
+                name: document.querySelector('input[name="name"], #name, [data-field="name"]')?.value?.trim() || '',
+                phone: document.querySelector('input[name="phone"], #phone, [data-field="phone"]')?.value?.trim() || '',
+                email: document.querySelector('input[name="email"], #email, [data-field="email"]')?.value?.trim() || '',
+                additionalNumber: document.querySelector('input[name="additionalNumber"], #additionalNumber, [data-field="additionalNumber"]')?.value?.trim() || '',
+                personalPage: document.querySelector('input[name="personalPage"], #personalPage, [data-field="personalPage"]')?.value?.trim() || '',
+                linkedinLink: document.querySelector('input[name="linkedinLink"], #linkedinLink, [data-field="linkedinLink"]')?.value?.trim() || '',
+                summary: document.querySelector('textarea[name="summary"], #summary, [data-field="summary"]')?.value?.trim() || '',
+                introduction: document.querySelector('textarea[name="introduction"], #introduction, [data-field="introduction"]')?.value?.trim() || ''
+            };
+        }
+
+        function parseEducationExperience() {
+            const educationItems = [];
+            
+            // Try multiple selectors to find education sections
+            const educationSections = document.querySelectorAll(
+                '.education-item, [data-section="education"], .education-entry, #education .entry, .education-section'
+            );
+            
+            educationSections.forEach((section, index) => {
+                const education = {
+                    degree: section.querySelector('input[name*="degree"], input[data-field="degree"], .degree-input')?.value?.trim() || '',
+                    institution: section.querySelector('input[name*="institution"], input[data-field="institution"], .institution-input')?.value?.trim() || '',
+                    location: section.querySelector('input[name*="location"], input[data-field="location"], .location-input')?.value?.trim() || '',
+                    startDate: section.querySelector('input[name*="startDate"], input[data-field="startDate"], .start-date-input')?.value?.trim() || '',
+                    endDate: section.querySelector('input[name*="endDate"], input[data-field="endDate"], .end-date-input')?.value?.trim() || '',
+                    gpa: section.querySelector('input[name*="gpa"], input[data-field="gpa"], .gpa-input')?.value?.trim() || '',
+                    description: section.querySelector('textarea[name*="description"], textarea[data-field="description"], .description-input')?.value?.trim() || ''
+                };
+                
+                // Only add if at least degree or institution is provided
+                if (education.degree || education.institution) {
+                    educationItems.push(education);
+                }
+            });
+            
+            // Fallback: if no sections found, try individual inputs
+            if (educationItems.length === 0) {
+                const degree = document.querySelector('input[name="degree"], #degree')?.value?.trim();
+                const institution = document.querySelector('input[name="institution"], #institution')?.value?.trim();
+                
+                if (degree || institution) {
+                    educationItems.push({
+                        degree: degree || '',
+                        institution: institution || '',
+                        location: document.querySelector('input[name="educationLocation"], #educationLocation')?.value?.trim() || '',
+                        startDate: document.querySelector('input[name="educationStartDate"], #educationStartDate')?.value?.trim() || '',
+                        endDate: document.querySelector('input[name="educationEndDate"], #educationEndDate')?.value?.trim() || '',
+                        gpa: document.querySelector('input[name="gpa"], #gpa')?.value?.trim() || '',
+                        description: document.querySelector('textarea[name="educationDescription"], #educationDescription')?.value?.trim() || ''
+                    });
+                }
+            }
+            
+            return educationItems;
+        }
+
+        function parseWorkExperience() {
+            const workItems = [];
+            
+            const workSections = document.querySelectorAll(
+                '.work-item, [data-section="work"], .work-entry, #workExperience .entry, .work-section'
+            );
+            
+            workSections.forEach((section, index) => {
+                const work = {
+                    position: section.querySelector('input[name*="position"], input[data-field="position"], .position-input')?.value?.trim() || '',
+                    company: section.querySelector('input[name*="company"], input[data-field="company"], .company-input')?.value?.trim() || '',
+                    location: section.querySelector('input[name*="location"], input[data-field="location"], .location-input')?.value?.trim() || '',
+                    startDate: section.querySelector('input[name*="startDate"], input[data-field="startDate"], .start-date-input')?.value?.trim() || '',
+                    endDate: section.querySelector('input[name*="endDate"], input[data-field="endDate"], .end-date-input')?.value?.trim() || '',
+                    description: section.querySelector('textarea[name*="description"], textarea[data-field="description"], .description-input')?.value?.trim() || ''
+                };
+                
+                if (work.position || work.company) {
+                    workItems.push(work);
+                }
+            });
+            
+            return workItems;
+        }
+
+        function parseProjectExperience() {
+            const projectItems = [];
+            
+            const projectSections = document.querySelectorAll(
+                '.project-item, [data-section="project"], .project-entry, #projectExperience .entry, .project-section'
+            );
+            
+            projectSections.forEach((section, index) => {
+                const project = {
+                    title: section.querySelector('input[name*="title"], input[data-field="title"], .title-input')?.value?.trim() || '',
+                    technologies: section.querySelector('input[name*="technologies"], input[data-field="technologies"], .technologies-input')?.value?.trim() || '',
+                    startDate: section.querySelector('input[name*="startDate"], input[data-field="startDate"], .start-date-input')?.value?.trim() || '',
+                    endDate: section.querySelector('input[name*="endDate"], input[data-field="endDate"], .end-date-input')?.value?.trim() || '',
+                    description: section.querySelector('textarea[name*="description"], textarea[data-field="description"], .description-input')?.value?.trim() || '',
+                    link: section.querySelector('input[name*="link"], input[data-field="link"], .link-input')?.value?.trim() || ''
+                };
+                
+                if (project.title) {
+                    projectItems.push(project);
+                }
+            });
+            
+            return projectItems;
+        }
+
+        function parsePublications() {
+            const publicationItems = [];
+            
+            const publicationSections = document.querySelectorAll(
+                '.publication-item, [data-section="publication"], .publication-entry, #publications .entry, .publication-section'
+            );
+            
+            publicationSections.forEach((section, index) => {
+                const publication = {
+                    title: section.querySelector('input[name*="title"], input[data-field="title"], .title-input')?.value?.trim() || '',
+                    authors: section.querySelector('input[name*="authors"], input[data-field="authors"], .authors-input')?.value?.trim() || '',
+                    journal: section.querySelector('input[name*="journal"], input[data-field="journal"], .journal-input')?.value?.trim() || '',
+                    year: section.querySelector('input[name*="year"], input[data-field="year"], .year-input')?.value?.trim() || '',
+                    doi: section.querySelector('input[name*="doi"], input[data-field="doi"], .doi-input')?.value?.trim() || '',
+                    link: section.querySelector('input[name*="link"], input[data-field="link"], .link-input')?.value?.trim() || ''
+                };
+                
+                if (publication.title) {
+                    publicationItems.push(publication);
+                }
+            });
+            
+            return publicationItems;
+        }
+
+        function validateRequiredFields(data) {
+            const errors = [];
+            
+            if (!data.personal.name) {
+                errors.push('Name is required');
+            }
+            
+            if (!data.personal.email) {
+                errors.push('Email is required');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.personal.email)) {
+                errors.push('Invalid email format');
+            }
+            
+            if (!data.personal.phone && !data.personal.additionalNumber) {
+                errors.push('At least one phone number is required');
+            }
+            
+            return errors;
+        }
+
+        function parseAllResumeData() {
+            const resumeData = {
+                personal: parsePersonalInformation(),
+                education: parseEducationExperience(),
+                work: parseWorkExperience(),
+                projects: parseProjectExperience(),
+                publications: parsePublications(),
+                settings: {
+                    pdfTitle: document.querySelector('input[name="pdfTitle"], #pdfTitle, [data-field="pdfTitle"]')?.value?.trim() || 'Resume',
+                    pageSize: document.querySelector('select[name="pageSize"], #pageSize')?.value || 'Letter',
+                    includePageNumbers: document.querySelector('input[name="includePageNumbers"], #includePageNumbers')?.checked || false,
+                    documentName: document.querySelector('input[name="documentName"], #documentName')?.value?.trim() || 'resume'
+                }
+            };
+            
+            return resumeData;
+        }
+
+        async function submitResumeData() {
+            try {
+                // Show loading indicator
+                // const submitButton = document.querySelector('button[type="submit"], .generate-btn, #generateBtn');
+                // const submitButton = document.querySelector('button[type="submit"], .generate-btn, #generateBtn');
+                const submitButton = document.querySelector('#modalGenerateBtn');
+                const originalText = submitButton?.textContent || 'Generate';
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Generating...';
+                }
+                
+                // Parse all data
+                const resumeData = parseAllResumeData();
+                
+                // Validate required fields
+                const validationErrors = validateRequiredFields(resumeData);
+                if (validationErrors.length > 0) {
+                    throw new Error('Validation failed: ' + validationErrors.join(', '));
+                }
+                
+                // Submit to server
+                const response = await fetch('/generate-resume', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(resumeData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ message: 'Server error' }));
+                    throw new Error(errorData.message || `Server returned ${response.status}`);
+                }
+                
+                // Handle successful response
+                const result = await response.json();
+                
+                if (result.downloadUrl) {
+                    // Trigger download
+                    const link = document.createElement('a');
+                    link.href = result.downloadUrl;
+                    link.download = resumeData.settings.documentName + '.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                
+                // Show success message
+                showNotification('Resume generated successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Resume generation failed:', error);
+                showNotification(error.message || 'Failed to generate resume', 'error');
+            } finally {
+                // Restore button
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 24px;
+                border-radius: 4px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: opacity 0.3s ease;
+                ${type === 'success' ? 'background-color: #10b981;' : ''}
+                ${type === 'error' ? 'background-color: #ef4444;' : ''}
+                ${type === 'info' ? 'background-color: #3b82f6;' : ''}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Initialize form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form, .resume-form');
+            // const submitButton = document.querySelector('button[type="submit"], .generate-btn, #generateBtn, button:contains("Generate")');
+            // const submitButton = document.querySelector('button[type="submit"], .generate-btn, #generateBtn');
+            const submitButton = document.querySelector('#modalGenerateBtn');
+            
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitResumeData();
+                });
+            } else if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    submitResumeData();
+                });
+            }
+        });
+
+        // Export functions for external use
+        window.ResumeGenerator = {
+            parseAllResumeData,
+            submitResumeData,
+            validateRequiredFields,
+            parsePersonalInformation,
+            parseEducationExperience,
+            parseWorkExperience,
+            parseProjectExperience,
+            parsePublications
+        };
+    </script>
+</body>
+</html>

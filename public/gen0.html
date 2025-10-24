@@ -7,6 +7,178 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #fafafa;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            margin-bottom: 10px;
+        }
+
+        .form-group button {
+            background-color: #dc3545;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+
+        .form-group button:hover {
+            background-color: #c82333;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
+            color: #333;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: #fff;
+        }
+
+        button,
+        input[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover,
+        input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled,
+        input[type="button"]:disabled {
+            background-color: #d6d6d6;
+            cursor: not-allowed;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-button:hover {
+            background-color: #218838;
+        }
+
+        .pdf-settings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pdf-settings label {
+            font-size: 14px;
+            font-weight: normal;
+            color: #555;
+        }
+
+        .pdf-settings select,
+        .pdf-settings input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .footer button {
+            background-color: #ff8800;
+            color: #fff;
+        }
+
+        /* body {
+            font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -74,14 +246,13 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
+        } */
     </style>
 </head>
 <body>
-    <h1>Resume PDF Generator</h1>
+    <!-- <h1>Resume PDF Generator</h1>
     
     <form id="resumeForm">
-        <!-- Basic Information -->
         <div class="form-group">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
@@ -102,41 +273,35 @@
             <textarea id="summary" name="summary" rows="4"></textarea>
         </div>
 
-        <!-- Education Section -->
         <div class="array-section">
             <h3>Education</h3>
             <div id="educationContainer"></div>
             <button type="button" class="btn-secondary" onclick="addEducation()">Add Education</button>
         </div>
 
-        <!-- Work Experience Section -->
         <div class="array-section">
             <h3>Work Experience</h3>
             <div id="workExperienceContainer"></div>
             <button type="button" class="btn-secondary" onclick="addWorkExperience()">Add Work Experience</button>
         </div>
 
-        <!-- Project Experience Section -->
         <div class="array-section">
             <h3>Project Experience</h3>
             <div id="projectExperienceContainer"></div>
             <button type="button" class="btn-secondary" onclick="addProjectExperience()">Add Project Experience</button>
         </div>
 
-        <!-- Skills Section -->
         <div class="form-group">
             <label for="skills">Skills (comma-separated):</label>
             <textarea id="skills" name="skills" rows="3" placeholder="JavaScript, Python, React, Node.js"></textarea>
         </div>
 
-        <!-- Publications Section -->
         <div class="array-section">
             <h3>Publications</h3>
             <div id="publicationsContainer"></div>
             <button type="button" class="btn-secondary" onclick="addPublication()">Add Publication</button>
         </div>
 
-        <!-- PDF Settings -->
         <div class="array-section">
             <h3>PDF Settings</h3>
             <div class="form-group">
@@ -173,7 +338,6 @@
             </div>
         </div>
 
-        <!-- User Information -->
         <div class="form-group">
             <label for="userId">User ID:</label>
             <input type="text" id="userId" name="userId" required placeholder="Enter your user ID">
@@ -189,9 +353,87 @@
             <input type="text" id="versionId" name="versionId" placeholder="Optional version ID">
         </div>
 
-        <!-- Generate PDF Button -->
         <button type="submit" class="btn-primary">Generate PDF</button>
-    </form>
+    </form> -->
+
+    <div class="container">
+        <h1>Resume PDF Generator</h1>
+        <form>
+            <div class="section">
+                <div class="section-header">
+                    <span>Personal Information</span>
+                </div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your full name" />
+
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" placeholder="Your phone number" />
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your email address" />
+            </div>
+
+            <div class="section">
+                <label for="summary">Summary:</label>
+                <textarea id="summary" name="summary" rows="4" placeholder="Write a brief summary about yourself"></textarea>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <span>Education</span>
+                    <!-- <button type="button" class="add-button" onclick="addEducation()">Add Education</button> -->
+                    <button type="button" class="add-button" id="add-education-btn">Add Education</button>
+                </div>
+                <div id="education-container"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <span>Work Experience</span>
+                    <!-- <button type="button" class="add-button" onclick="addWorkExperience()">Add Work Experience</button> -->
+                    <button type="button" class="add-button" id="add-work-btn">Add Work Experience</button>
+                </div>
+                <div id="work-container"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <span>project Experience</span>
+                    <!-- <button type="button" class="add-button" onclick="addProjectExperience()">Add Project</button> -->
+                    <button type="button" class="add-button" id="add-project-btn">Add Project Experience</button>
+                </div>
+                <div id="project-container"></div>
+            </div>
+
+
+            <div class="section">
+                <div class="section-header">
+                    <span>Publications</span>
+                    <!-- <button type="button" class="add-button" onclick="addPublication()">Add Publication</button> -->
+                    <button type="button" class="add-button" id="add-publication-btn">Add Publication</button>
+                </div>
+                <div id="publication-container"></div>
+            </div>
+
+            <div class="section pdf-settings">
+                <label for="pdf-title">PDF Title:
+                    <input type="text" id="pdf-title" name="pdf-title" placeholder="Resume Title" />
+                </label>
+                <label for="page-size">Page Size:
+                    <select id="page-size">
+                        <option value="letter">Letter</option>
+                        <option value="a4">A4</option>
+                    </select>
+                </label>
+                <label for="include-page-numbers">
+                    <input type="checkbox" id="include-page-numbers" />
+                    Include Page Numbers
+                </label>
+            </div>
+
+            <button type="submit">Generate PDF</button>
+        </form>
+    </div>
 
     <div id="result"></div>
 
@@ -214,75 +456,153 @@
             }
         });
 
-        // Add education entry
+        // const user = auth.currentUser;
+        // if (!user) {alert('Please log in to download files.'); return; }
+        // const userID = user.uid;
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            } else {
+                const userID = user.uid;
+            }
+        });
+
+        // function addEducation() {
+        //     const container = document.getElementById('educationContainer');
+        //     const index = container.children.length;
+        //     const div = document.createElement('div');
+        //     div.className = 'array-item';
+        //     div.innerHTML = `
+        //         <label>School Name:</label>
+        //         <input type="text" name="education[${index}][schoolName]" placeholder="University/School name">
+        //         <label>Duration:</label>
+        //         <input type="text" name="education[${index}][duration]" placeholder="2020-2024">
+        //         <label>Descriptions (one per line):</label>
+        //         <textarea name="education[${index}][descriptions]" rows="3" placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant coursework: Data Structures, Algorithms"></textarea>
+        //         <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        //     `;
+        //     container.appendChild(div);
+        // }
+
+        // function addWorkExperience() {
+        //     const container = document.getElementById('workExperienceContainer');
+        //     const index = container.children.length;
+        //     const div = document.createElement('div');
+        //     div.className = 'array-item';
+        //     div.innerHTML = `
+        //         <label>Company:</label>
+        //         <input type="text" name="workExperience[${index}][company]" placeholder="Company name">
+        //         <label>Position:</label>
+        //         <input type="text" name="workExperience[${index}][position]" placeholder="Software Engineer">
+        //         <label>Duration:</label>
+        //         <input type="text" name="workExperience[${index}][duration]" placeholder="Jan 2022 - Present">
+        //         <label>Descriptions (one per line):</label>
+        //         <textarea name="workExperience[${index}][descriptions]" rows="3" placeholder="Developed web applications using React and Node.js&#10;Collaborated with cross-functional teams&#10;Improved system performance by 30%"></textarea>
+        //         <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        //     `;
+        //     container.appendChild(div);
+        // }
+
+        // function addProjectExperience() {
+        //     const container = document.getElementById('projectExperienceContainer');
+        //     const index = container.children.length;
+        //     const div = document.createElement('div');
+        //     div.className = 'array-item';
+        //     div.innerHTML = `
+        //         <label>Project Name:</label>
+        //         <input type="text" name="projectExperience[${index}][name]" placeholder="Project name">
+        //         <label>Duration:</label>
+        //         <input type="text" name="projectExperience[${index}][duration]" placeholder="Jun 2023 - Aug 2023">
+        //         <label>Descriptions (one per line):</label>
+        //         <textarea name="projectExperience[${index}][descriptions]" rows="3" placeholder="Built a full-stack web application&#10;Used React, Express, and MongoDB&#10;Deployed on AWS"></textarea>
+        //         <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        //     `;
+        //     container.appendChild(div);
+        // }
+
+        // function addPublication() {
+        //     const container = document.getElementById('publicationsContainer');
+        //     const index = container.children.length;
+        //     const div = document.createElement('div');
+        //     div.className = 'array-item';
+        //     div.innerHTML = `
+        //         <label>Publication:</label>
+        //         <input type="text" name="publications[${index}]" placeholder="Paper title, Journal/Conference, Year">
+        //         <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        //     `;
+        //     container.appendChild(div);
+        // }
+
         function addEducation() {
-            const container = document.getElementById('educationContainer');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'array-item';
-            div.innerHTML = `
-                <label>School Name:</label>
-                <input type="text" name="education[${index}][schoolName]" placeholder="University/School name">
-                <label>Duration:</label>
-                <input type="text" name="education[${index}][duration]" placeholder="2020-2024">
-                <label>Descriptions (one per line):</label>
-                <textarea name="education[${index}][descriptions]" rows="3" placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant coursework: Data Structures, Algorithms"></textarea>
-                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            const container = document.getElementById('education-container') || createContainer('education-container', 'Education');
+            const educationDiv = document.createElement('div');
+            educationDiv.className = 'form-group';
+            educationDiv.innerHTML = `
+                <input type="text" placeholder="School/University" name="education-school[]">
+                <input type="text" placeholder="Degree" name="education-degree[]">
+                <input type="text" placeholder="Years (e.g., 2018-2022)" name="education-years[]">
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
             `;
-            container.appendChild(div);
+            container.appendChild(educationDiv);
         }
 
-        // Add work experience entry
         function addWorkExperience() {
-            const container = document.getElementById('workExperienceContainer');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'array-item';
-            div.innerHTML = `
-                <label>Company:</label>
-                <input type="text" name="workExperience[${index}][company]" placeholder="Company name">
-                <label>Position:</label>
-                <input type="text" name="workExperience[${index}][position]" placeholder="Software Engineer">
-                <label>Duration:</label>
-                <input type="text" name="workExperience[${index}][duration]" placeholder="Jan 2022 - Present">
-                <label>Descriptions (one per line):</label>
-                <textarea name="workExperience[${index}][descriptions]" rows="3" placeholder="Developed web applications using React and Node.js&#10;Collaborated with cross-functional teams&#10;Improved system performance by 30%"></textarea>
-                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            const container = document.getElementById('work-container') || createContainer('work-container', 'Work Experience');
+            const workDiv = document.createElement('div');
+            workDiv.className = 'form-group';
+            workDiv.innerHTML = `
+                <input type="text" placeholder="Company" name="work-company[]">
+                <input type="text" placeholder="Position" name="work-position[]">
+                <input type="text" placeholder="Years (e.g., 2020-2023)" name="work-years[]">
+                <textarea placeholder="Description" name="work-description[]"></textarea>
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
             `;
-            container.appendChild(div);
+            container.appendChild(workDiv);
         }
 
-        // Add project experience entry
         function addProjectExperience() {
-            const container = document.getElementById('projectExperienceContainer');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'array-item';
-            div.innerHTML = `
-                <label>Project Name:</label>
-                <input type="text" name="projectExperience[${index}][name]" placeholder="Project name">
-                <label>Duration:</label>
-                <input type="text" name="projectExperience[${index}][duration]" placeholder="Jun 2023 - Aug 2023">
-                <label>Descriptions (one per line):</label>
-                <textarea name="projectExperience[${index}][descriptions]" rows="3" placeholder="Built a full-stack web application&#10;Used React, Express, and MongoDB&#10;Deployed on AWS"></textarea>
-                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            const container = document.getElementById('project-container') || createContainer('project-container', 'Project Experience');
+            const projectDiv = document.createElement('div');
+            projectDiv.className = 'form-group';
+            projectDiv.innerHTML = `
+                <input type="text" placeholder="Project Name" name="project-name[]">
+                <textarea placeholder="Project Description" name="project-description[]"></textarea>
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
             `;
-            container.appendChild(div);
+            container.appendChild(projectDiv);
         }
 
-        // Add publication entry
         function addPublication() {
-            const container = document.getElementById('publicationsContainer');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'array-item';
-            div.innerHTML = `
-                <label>Publication:</label>
-                <input type="text" name="publications[${index}]" placeholder="Paper title, Journal/Conference, Year">
-                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            const container = document.getElementById('publication-container');
+            const publicationDiv = document.createElement('div');
+            publicationDiv.className = 'form-group';
+            publicationDiv.innerHTML = `
+                <input type="text" placeholder="Publication Title" name="publication-title[]">
+                <input type="text" placeholder="Journal/Conference" name="publication-venue[]">
+                <input type="text" placeholder="Year" name="publication-year[]">
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
             `;
-            container.appendChild(div);
+            container.appendChild(publicationDiv);
         }
+
+        function createContainer(id, sectionName) {
+            const section = Array.from(document.querySelectorAll('.section-header span')).find(span => span.textContent === sectionName).closest('.section');
+            const container = document.createElement('div');
+            container.id = id;
+            section.appendChild(container);
+            return container;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners
+            document.getElementById('add-education-btn').addEventListener('click', addEducation);
+            document.getElementById('add-work-btn').addEventListener('click', addWorkExperience);
+            document.getElementById('add-project-btn').addEventListener('click', addProjectExperience);
+            document.getElementById('add-publication-btn').addEventListener('click', addPublication);
+        });
+
 
         // Parse form data into the expected format
         function parseFormData(formData) {
@@ -390,7 +710,9 @@
                 // Replace with your actual Firebase function URL
                 // const functionUrl = 'https://your-region-your-project.cloudfunctions.net/generatePdf';
                 const functionUrl = '/generatePdf';
-                
+
+                console.log(data);
+
                 const response = await fetch(functionUrl, {
                     method: 'POST',
                     headers: {

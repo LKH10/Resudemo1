@@ -313,6 +313,24 @@
       font-size: 16px;
     }
 
+    /* New Add [N] */
+    .preview-modal {
+      width: 90%;
+      max-width: 1000px;
+      height: 80vh;
+    }
+
+    .preview-modal .modal-body {
+      padding: 0;
+      height: calc(100% - 60px);
+    }
+
+    .preview-modal iframe {
+      height: 100%;
+      border: none;
+    }
+    /* End of New Add [N] */
+
     /* New Add [G] */
     .button-container {
       display: flex;
@@ -662,6 +680,72 @@
     }
     // End of New Add [M]
 
+    // New Add [N]
+    // async function previewFile(fileID) {
+    //   try {
+    //     const user = auth.currentUser;
+    //     if (!user) {alert('Please log in to preview files.'); return; }
+
+    //     const userID = user.uid;
+    //     const fileDoc = await db.collection('file').doc(fileID).get();
+    //     if (!fileDoc.exists) {alert('File not found.'); return; }
+
+    //     const fileData = fileDoc.data();
+    //     const storagePath = fileData.path;
+    //     const fileRef = storage.ref(storagePath);
+    //     const downloadURL = await fileRef.getDownloadURL();
+    //     showPreviewModal(downloadURL, fileData.filename);
+
+    //   } catch (error) {
+    //     console.error('Error previewing file:', error);
+    //     alert('Error loading file preview.');
+    //   }
+    // }
+
+    async function previewFile(storagePath, fileName) {
+      try {
+        const fileRef = storage.ref(storagePath);
+        const downloadURL = await fileRef.getDownloadURL();
+        // const response = await fetch(downloadURL);
+        // const blob = await response.blob();
+        // const blobURL = URL.createObjectURL(blob);
+        // showPreviewModal(blobURL, fileData.filename);
+        showPreviewModal(downloadURL, fileName);
+      } catch (error) {
+        console.error('Error previewing file:', error);
+        alert('Error loading file preview.');
+      }
+    }
+
+    function showPreviewModal(pdfURL, filename) {
+      // const modalHTML = `
+      // <div id="previewModal" class="modal-overlay">
+      //     <div class="modal-content preview-modal">
+      //         <div class="modal-header">
+      //             <h3>Preview: ${filename}</h3>
+      //             <button class="close-btn" onclick="closePreviewModal()">&times;</button>
+      //         </div>
+      //         <div class="modal-body">
+      //             <iframe src="${pdfURL}" width="100%" height="600px" frameborder="0"></iframe>
+      //         </div>
+      //     </div>
+      // </div>
+      // `;
+      // document.body.insertAdjacentHTML('beforeend', modalHTML);
+      window.open(pdfURL, '_blank');
+    }
+
+    function closePreviewModal() {
+      const modal = document.getElementById('previewModal');
+      if (modal) {modal.remove(); }
+      // if (modal) {
+      //   const iframe = modal.querySelector('iframe');
+      //   if (iframe && iframe.src.startsWith('blob:')) {URL.revokeObjectURL(iframe.src); }
+      //   modal.remove();
+      // }
+    }
+    // End of New Add [N]
+
     // Load user files
     async function loadFiles() {
       const user = auth.currentUser;
@@ -693,7 +777,11 @@
         const fileLink = document.createElement('a');
         fileLink.textContent = file.filename;
         fileLink.href = '#';
-        fileLink.addEventListener('click', () => showAnalysis(fileID));
+        // New Add [N]
+        // fileLink.addEventListener('click', () => showAnalysis(fileID));
+        // fileLink.addEventListener('click', () => {previewFile(fileID); });
+        fileLink.addEventListener('click', () => {previewFile(file.path, file.filename); });
+        // End of New Add [N]
         listItem.appendChild(fileLink);
         // New Add [K]
         if (file.type && file.type.startsWith('Generate')) {

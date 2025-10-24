@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume PDF Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .array-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .array-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: white;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume PDF Generator</h1>
+    
+    <form id="resumeForm">
+        <!-- Basic Information -->
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Phone:</label>
+            <input type="tel" id="phone" name="phone">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email">
+        </div>
+        
+        <div class="form-group">
+            <label for="summary">Summary:</label>
+            <textarea id="summary" name="summary" rows="4"></textarea>
+        </div>
+
+        <!-- Education Section -->
+        <div class="array-section">
+            <h3>Education</h3>
+            <div id="educationContainer"></div>
+            <button type="button" class="btn-secondary" onclick="addEducation()">Add Education</button>
+        </div>
+
+        <!-- Work Experience Section -->
+        <div class="array-section">
+            <h3>Work Experience</h3>
+            <div id="workExperienceContainer"></div>
+            <button type="button" class="btn-secondary" onclick="addWorkExperience()">Add Work Experience</button>
+        </div>
+
+        <!-- Project Experience Section -->
+        <div class="array-section">
+            <h3>Project Experience</h3>
+            <div id="projectExperienceContainer"></div>
+            <button type="button" class="btn-secondary" onclick="addProjectExperience()">Add Project Experience</button>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="form-group">
+            <label for="skills">Skills (comma-separated):</label>
+            <textarea id="skills" name="skills" rows="3" placeholder="JavaScript, Python, React, Node.js"></textarea>
+        </div>
+
+        <!-- Publications Section -->
+        <div class="array-section">
+            <h3>Publications</h3>
+            <div id="publicationsContainer"></div>
+            <button type="button" class="btn-secondary" onclick="addPublication()">Add Publication</button>
+        </div>
+
+        <!-- PDF Settings -->
+        <div class="array-section">
+            <h3>PDF Settings</h3>
+            <div class="form-group">
+                <label for="title">PDF Title:</label>
+                <input type="text" id="title" name="title" value="Resume">
+            </div>
+            
+            <div class="form-group">
+                <label for="page_size">Page Size:</label>
+                <select id="page_size" name="page_size">
+                    <option value="Letter">Letter</option>
+                    <option value="A4">A4</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="margins">Margins:</label>
+                <input type="text" id="margins" name="margins" value="36px" placeholder="36px or 36px 36px 48px 36px">
+            </div>
+            
+            <div class="form-group">
+                <label for="font_family">Font Family:</label>
+                <input type="text" id="font_family" name="font_family" value="Inter, system-ui, -apple-system, Arial, sans-serif">
+            </div>
+            
+            <div class="form-group">
+                <label for="line_height">Line Height:</label>
+                <input type="number" id="line_height" name="line_height" value="1.5" step="0.1" min="1" max="3">
+            </div>
+            
+            <div class="form-group">
+                <label for="page_numbers">Include Page Numbers:</label>
+                <input type="checkbox" id="page_numbers" name="page_numbers" checked>
+            </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="form-group">
+            <label for="userId">User ID:</label>
+            <input type="text" id="userId" name="userId" required placeholder="Enter your user ID">
+        </div>
+        
+        <div class="form-group">
+            <label for="resumeId">Resume ID (optional):</label>
+            <input type="text" id="resumeId" name="resumeId" placeholder="Optional resume ID">
+        </div>
+        
+        <div class="form-group">
+            <label for="versionId">Version ID (optional):</label>
+            <input type="text" id="versionId" name="versionId" placeholder="Optional version ID">
+        </div>
+
+        <!-- Generate PDF Button -->
+        <button type="submit" class="btn-primary">Generate PDF</button>
+    </form>
+
+    <div id="result"></div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="config.js"></script>
+
+
+    <script>
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const db = firebase.firestore();
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                alert('Please log in to access this page.');
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Add education entry
+        function addEducation() {
+            const container = document.getElementById('educationContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            div.innerHTML = `
+                <label>School Name:</label>
+                <input type="text" name="education[${index}][schoolName]" placeholder="University/School name">
+                <label>Duration:</label>
+                <input type="text" name="education[${index}][duration]" placeholder="2020-2024">
+                <label>Descriptions (one per line):</label>
+                <textarea name="education[${index}][descriptions]" rows="3" placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant coursework: Data Structures, Algorithms"></textarea>
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Add work experience entry
+        function addWorkExperience() {
+            const container = document.getElementById('workExperienceContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            div.innerHTML = `
+                <label>Company:</label>
+                <input type="text" name="workExperience[${index}][company]" placeholder="Company name">
+                <label>Position:</label>
+                <input type="text" name="workExperience[${index}][position]" placeholder="Software Engineer">
+                <label>Duration:</label>
+                <input type="text" name="workExperience[${index}][duration]" placeholder="Jan 2022 - Present">
+                <label>Descriptions (one per line):</label>
+                <textarea name="workExperience[${index}][descriptions]" rows="3" placeholder="Developed web applications using React and Node.js&#10;Collaborated with cross-functional teams&#10;Improved system performance by 30%"></textarea>
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Add project experience entry
+        function addProjectExperience() {
+            const container = document.getElementById('projectExperienceContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            div.innerHTML = `
+                <label>Project Name:</label>
+                <input type="text" name="projectExperience[${index}][name]" placeholder="Project name">
+                <label>Duration:</label>
+                <input type="text" name="projectExperience[${index}][duration]" placeholder="Jun 2023 - Aug 2023">
+                <label>Descriptions (one per line):</label>
+                <textarea name="projectExperience[${index}][descriptions]" rows="3" placeholder="Built a full-stack web application&#10;Used React, Express, and MongoDB&#10;Deployed on AWS"></textarea>
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Add publication entry
+        function addPublication() {
+            const container = document.getElementById('publicationsContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            div.innerHTML = `
+                <label>Publication:</label>
+                <input type="text" name="publications[${index}]" placeholder="Paper title, Journal/Conference, Year">
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Parse form data into the expected format
+        function parseFormData(formData) {
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                summary: formData.get('summary'),
+                title: formData.get('title'),
+                page_size: formData.get('page_size'),
+                margins: formData.get('margins'),
+                font_family: formData.get('font_family'),
+                line_height: parseFloat(formData.get('line_height')),
+                page_numbers: formData.get('page_numbers') === 'on',
+                userId: formData.get('userId'),
+                resumeId: formData.get('resumeId'),
+                versionId: formData.get('versionId'),
+                education: [],
+                workExperience: [],
+                projectExperience: [],
+                publications: []
+            };
+
+            // Parse skills
+            const skillsText = formData.get('skills');
+            if (skillsText) {
+                data.skills = skillsText.split(',').map(skill => skill.trim()).filter(skill => skill);
+            }
+
+            // Parse education
+            const educationContainer = document.getElementById('educationContainer');
+            for (let i = 0; i < educationContainer.children.length; i++) {
+                const schoolName = formData.get(`education[${i}][schoolName]`);
+                const duration = formData.get(`education[${i}][duration]`);
+                const descriptionsText = formData.get(`education[${i}][descriptions]`);
+                
+                if (schoolName || duration || descriptionsText) {
+                    data.education.push({
+                        schoolName: schoolName || '',
+                        duration: duration || '',
+                        descriptions: descriptionsText ? descriptionsText.split('\n').filter(desc => desc.trim()) : []
+                    });
+                }
+            }
+
+            // Parse work experience
+            const workContainer = document.getElementById('workExperienceContainer');
+            for (let i = 0; i < workContainer.children.length; i++) {
+                const company = formData.get(`workExperience[${i}][company]`);
+                const position = formData.get(`workExperience[${i}][position]`);
+                const duration = formData.get(`workExperience[${i}][duration]`);
+                const descriptionsText = formData.get(`workExperience[${i}][descriptions]`);
+                
+                if (company || position || duration || descriptionsText) {
+                    data.workExperience.push({
+                        company: company || '',
+                        position: position || '',
+                        duration: duration || '',
+                        descriptions: descriptionsText ? descriptionsText.split('\n').filter(desc => desc.trim()) : []
+                    });
+                }
+            }
+
+            // Parse project experience
+            const projectContainer = document.getElementById('projectExperienceContainer');
+            for (let i = 0; i < projectContainer.children.length; i++) {
+                const name = formData.get(`projectExperience[${i}][name]`);
+                const duration = formData.get(`projectExperience[${i}][duration]`);
+                const descriptionsText = formData.get(`projectExperience[${i}][descriptions]`);
+                
+                if (name || duration || descriptionsText) {
+                    data.projectExperience.push({
+                        name: name || '',
+                        duration: duration || '',
+                        descriptions: descriptionsText ? descriptionsText.split('\n').filter(desc => desc.trim()) : []
+                    });
+                }
+            }
+
+            // Parse publications
+            const publicationsContainer = document.getElementById('publicationsContainer');
+            for (let i = 0; i < publicationsContainer.children.length; i++) {
+                const publication = formData.get(`publications[${i}]`);
+                if (publication && publication.trim()) {
+                    data.publications.push(publication.trim());
+                }
+            }
+
+            return data;
+        }
+
+        // Handle form submission
+        document.getElementById('resumeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = parseFormData(formData);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Generating PDF...';
+            resultDiv.className = '';
+
+            try {
+                // Replace with your actual Firebase function URL
+                // const functionUrl = 'https://your-region-your-project.cloudfunctions.net/generatePdf';
+                const functionUrl = '/generatePdf';
+
+                console.log(data);
+
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                        <h3>PDF Generated Successfully!</h3>
+                        <p><strong>File ID:</strong> ${result.fileID}</p>
+                        <p><strong>Title:</strong> ${result.title}</p>
+                        <p><strong>Pages:</strong> ${result.page_count || 'N/A'}</p>
+                        <p><strong>Size:</strong> ${result.bytes ? Math.round(result.bytes / 1024) + ' KB' : 'N/A'}</p>
+                        <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
+                        <p><strong>Firebase Path:</strong> ${result.firebase_path}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `
+                        <h3>Error Generating PDF</h3>
+                        <p>${result.error || 'Unknown error occurred'}</p>
+                        ${result.detail ? `<p><strong>Details:</strong> ${result.detail}</p>` : ''}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h3>Network Error</h3>
+                    <p>Failed to connect to the server: ${error.message}</p>
+                `;
+            }
+        });
+
+        // Add initial entries
+        addEducation();
+        addWorkExperience();
+        addProjectExperience();
+        addPublication();
+    </script>
+</body>
+</html>

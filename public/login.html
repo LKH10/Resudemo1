@@ -193,7 +193,28 @@
         googleSignInButton.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                await auth.signInWithPopup(provider);
+                // New Add [A]
+                // await auth.signInWithPopup(provider);
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                const userDocRef = db.collection('user').doc(user.uid);
+                const userDoc = await userDocRef.get();
+                
+                if (!userDoc.exists) {
+                    await userDocRef.set({
+                        username: user.email,
+                        email: user.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        verified: true,
+                        memberTill: null,
+                        files: [],
+                        provider: 'google.com'
+                    });
+                    console.log('User document created for Google sign-in user');
+                }
+                // End of New Add [A]
+
                 // Redirect to dashboard
                 // window.location.href = '/dashboard.html';
                 window.location.href = '/dashb3.html';

@@ -611,8 +611,21 @@ Page numbers: ${pageNumbers !== false}`;
     //   generationConfig: {responseMimeType: "application/json"},
     // });
 
+    // New Add [B]
+    // const mcpPayload = {
+    //   text: aiResponse.enhanced_text || resumeText, // resumeText,
+    //   title: pdfTitle,
+    //   pageSize: pageSize || "Letter",
+    //   margins: margins || "36px",
+    //   fontFamily: fontFamily || "Inter, system-ui, -apple-system, Arial, sans-serif",
+    //   lineHeight: lineHeight || 1.5,
+    //   headerHtml: headerHtml || "",
+    //   footerHtml: footerHtml || "",
+    //   pageNumbers: pageNumbers !== false,
+    // };
+
     const mcpPayload = {
-      text: aiResponse.enhanced_text || resumeText, // resumeText,
+      text: aiResponse.enhanced_text || resumeText,
       title: pdfTitle,
       pageSize: pageSize || "Letter",
       margins: margins || "36px",
@@ -621,7 +634,18 @@ Page numbers: ${pageNumbers !== false}`;
       headerHtml: headerHtml || "",
       footerHtml: footerHtml || "",
       pageNumbers: pageNumbers !== false,
+      // Add structured data
+      name: name,
+      phone: phone,
+      email: email,
+      summary: summary,
+      education: education,
+      workExperience: workExperience,
+      projectExperience: projectExperience,
+      skills: skills,
+      publications: publications,
     };
+    // End of New Add [B]
 
     // Step 6: Call MCP server directly
     // const pdfServiceUrl = process.env.PDF_SERVICE_URL || "https://mcp-server-636025066641.us-west1.run.app/tools/txt_to_pdf";
