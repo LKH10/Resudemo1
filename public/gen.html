@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500&display=swap" rel="stylesheet">
     <title>Resume Generator</title>
     <style>
         @font-face {font-family: 'Ubuntu'; src: url('./static/fonts/Ubuntu-R.ttf')  format('truetype'); font-weight: normal; font-style: normal; }
@@ -94,7 +95,7 @@
             flex-shrink: 0;
             max-height: 70vh;
             overflow-y: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            /* box-shadow: 0 2px 8px rgba(0,0,0,0.1); */
         }
 
         .card h2 {
@@ -120,10 +121,16 @@
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: 2px solid #e0e0e0;
             border-radius: 6px;
             font-size: 14px;
             background: white;
+            font-family: Ubuntu, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            font-family: Ubuntu, 'Segoe UI', Roboto, sans-serif;
         }
 
         .form-group textarea {
@@ -147,7 +154,7 @@
             border: none;
             border-radius: 6px;
             /* align-self: center; */
-            margin-top: auto;
+            margin-top: 0px;
             margin-bottom: auto;
             padding: 12px;
             cursor: pointer;
@@ -283,7 +290,7 @@
         }
 
         .modal-generate-btn {
-            background: #ff8c00;
+            background: #ff8b44;
             color: white;
         }
 
@@ -297,7 +304,7 @@
         }
 
         .modal-generate-btn.error {
-            background: #ff8c00;
+            background: #ff8b44;
         }
 
         .close-btn {
@@ -312,11 +319,12 @@
         }
 
         .entry-section {
-            border: 1px solid #ccc;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            background: rgba(255,255,255,0.5);
+            /* background: rgba(255,255,255,0.5); */
+            background: #eee;
         }
 
         .entry-title {
@@ -404,9 +412,18 @@
                         <div class="entry-title">Work Experience 1</div>
                         <div class="form-row">
                             <div class="form-group">
-                                <input type="text" class="work-title" placeholder="Title, Company">
+                                <!-- <input type="text" class="work-company" placeholder="Title, Company"> -->
+                                <input type="text" class="work-company" placeholder="Company">
+                            </div>
+                            <div class="form-group" style="flex: 0.3;">
+                                <input type="text" class="work-duration" placeholder="Duration">
                             </div>
                             <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="work-position" placeholder="Position" style="width: 100%;">
+                            </div>
                         </div>
                         <div class="form-group">
                             <textarea class="work-description" placeholder="Describe your role and achievements"></textarea>
@@ -530,15 +547,6 @@
         const cards = document.querySelectorAll('.card');
         const totalCards = cards.length;
 
-        // function updateCardPosition() {
-        //     const container = document.getElementById('cardContainer');
-        //     const cardWidth = 815; // 800px + 15px gap
-        //     const translateX = -currentCard * cardWidth;
-        //     container.style.transform = `translateX(${translateX}px)`;
-            
-        //     updateNavigationButtons();
-        // }
-
         function updateCardPosition() {
             const container = document.getElementById('cardContainer');
             const cardWidth = 815; // 800px + 15px gap
@@ -634,14 +642,24 @@
             entry.className = 'entry-section';
             entry.innerHTML = `
                 <div class="entry-title">Work Experience ${count}</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <input type="text" class="work-title" placeholder="Title, Company">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <!-- <input type="text" class="work-company" placeholder="Title, Company"> -->
+                            <input type="text" class="work-company" placeholder="Company">
+                        </div>
+                        <div class="form-group" style="flex: 0.3;">
+                            <input type="text" class="work-duration" placeholder="Duration">
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
-                </div>
-                <div class="form-group">
-                    <textarea class="work-description" placeholder="Describe your role and achievements"></textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" class="work-position" placeholder="Position" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="work-description" placeholder="Describe your role and achievements"></textarea>
+                    </div>
                 </div>
             `;
             container.appendChild(entry);
@@ -695,10 +713,18 @@
             document.getElementById('modalOverlay').style.display = 'none';
             // Reset modal state
             const modalTitle = document.getElementById('modalTitle');
-            const modalBtn = document.getElementById('modalGenerateBtn');
+            const generateBtn = document.getElementById('modalGenerateBtn');
             modalTitle.textContent = 'Document name:';
-            modalBtn.textContent = 'Generate';
-            modalBtn.className = 'modal-btn modal-generate-btn';
+            generateBtn.textContent = 'Generate';
+            generateBtn.className = 'modal-btn modal-generate-btn';
+            if (generateBtn.classList.contains('generating')) {
+                generateBtn.classList.remove('generating');
+            } else if (generateBtn.classList.contains('success')) {
+                generateBtn.classList.remove('success');
+            }  else if (generateBtn.classList.contains('error')) {
+                generateBtn.classList.remove('error');
+            }
+            generateBtn.style.backgroundColor = '#ff8b44';
         }
 
         // Helper function to collect data from all cards
@@ -728,8 +754,8 @@
         function collectFormData() {
             console.log("User ID: ", userID);
             const data = {
-                phone: document.getElementById('phone').value || '',
                 name: document.getElementById('name').value || '',
+                phone: document.getElementById('phone').value || '',
                 email: document.getElementById('email').value || '',
                 summary: document.getElementById('summary').value || '',
                 additionalPhone: document.getElementById('additionalPhone').value || '',
@@ -742,21 +768,6 @@
                 publications: [],
                 title: document.getElementById('filename').value || new Date().toISOString().slice(0,19).replace('T','-').replace(/:/g,'-')
             };
-
-            // const data = {
-            //     title: formData.get('title'),
-            //     page_size: formData.get('page_size'),
-            //     margins: formData.get('margins'),
-            //     font_family: formData.get('font_family'),
-            //     line_height: parseFloat(formData.get('line_height')),
-            //     page_numbers: formData.get('page_numbers') === 'on',
-            //     resumeId: formData.get('resumeId'),
-            //     versionId: formData.get('versionId'),
-            //     education: [],
-            //     workExperience: [],
-            //     projectExperience: [],
-            //     publications: []
-            // };
 
 
             let descriptionsText;
@@ -772,20 +783,21 @@
             
             // Collect work entries
             document.querySelectorAll('#workEntries .entry-section').forEach(entry => {
+                descriptionsText = entry.querySelector('.work-description').value || ''
                 data.workExperience.push({
-                    company: entry.querySelector('.work-title').value || '',
-                    duration: '',
-                    // description: entry.querySelector('.work-description').value || ''
+                    company: entry.querySelector('.work-company').value || '',
+                    duration: entry.querySelector('.work-duration').value || '',
+                    position: entry.querySelector('.work-position').value || '',
                     descriptions: descriptionsText ? descriptionsText.split('\n').filter(desc => desc.trim()) : []
                 });
             });
             
             // Collect project entries
             document.querySelectorAll('#projectEntries .entry-section').forEach(entry => {
+                descriptionsText = entry.querySelector('.project-description').value || '';
                 data.projectExperience.push({
                     name: entry.querySelector('.project-title').value || '',
                     duration: '',
-                    // description: entry.querySelector('.project-description').value || ''
                     descriptions: descriptionsText ? descriptionsText.split('\n').filter(desc => desc.trim()) : []
                 });
             });
@@ -810,143 +822,26 @@
             updateCardPosition();
         });
 
-
-        // function generatePDF() {
-        //     const filename = document.getElementById('filename').value;
-        //     const modalBtn = document.getElementById('modalGenerateBtn');
-        //     const modalTitle = document.getElementById('modalTitle');
-            
-        //     if (!filename) {
-        //         alert('Please enter a filename');
-        //         return;
-        //     }
-            
-        //     // Change button state to generating
-        //     modalBtn.textContent = 'Generating...';
-        //     modalBtn.classList.add('generating');
-        //     modalBtn.disabled = true;
-            
-        //     // Collect all form data
-        //     const formData = collectFormData();
-        //     formData.filename = filename;
-            
-        //     // Simulate PDF generation (replace with actual implementation)
-        //     fetch('/generatePdf', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(formData)
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         if (data.success) {
-        //             modalTitle.textContent = 'New Document Generated!';
-        //             modalBtn.textContent = 'View';
-        //             modalBtn.classList.remove('generating');
-        //             modalBtn.classList.add('success');
-        //             modalBtn.disabled = false;
-        //             modalBtn.onclick = () => window.location.href = '/dashb3.html';
-        //         } else {
-        //             throw new Error('Generation failed');
-        //         }
-        //     })
-        //     .catch(error => {
-        //         modalTitle.textContent = 'Document generation failed';
-        //         modalBtn.textContent = 'Retry';
-        //         modalBtn.classList.remove('generating');
-        //         modalBtn.classList.add('error');
-        //         modalBtn.disabled = false;
-        //         modalBtn.onclick = generatePDF;
-        //     });
-        // }
-
-
-
-        // function generatePDF() {
-        //     // // Directly call the data collection and PDF generation
-        //     // const data = collectAllFormData();
-            
-        //     // const resultDiv = document.getElementById('result');
-        //     // resultDiv.style.display = 'block';
-        //     // resultDiv.innerHTML = 'Generating PDF...';
-        //     // resultDiv.className = '';
-
-        //     const data = collectAllFormData();
-        //     const modalContent = document.querySelector('.modal-content');
-        //     const originalContent = modalContent.innerHTML;
-
-        //     // modalContent.innerHTML = '<div style="padding: 20px; text-align: center;">Generating PDF...</div>';
-
-
-
-        //     document.getElementById('resumeForm').addEventListener('submit', async function(e) {
-        //         e.preventDefault();
-                
-        //         // Collect data from all cards instead of just current form
-        //         const data = collectAllFormData();
-                
-        //         const resultDiv = document.getElementById('result');
-        //         resultDiv.style.display = 'block';
-        //         resultDiv.innerHTML = 'Generating PDF...';
-        //         resultDiv.className = '';
-    
-        //         try {
-        //             const functionUrl = '/generatePdf';
-                    
-        //             const response = await fetch(functionUrl, {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify(data)
-        //             });
-    
-        //             const result = await response.json();
-    
-        //             if (response.ok && result.success) {
-        //                 resultDiv.className = 'success';
-        //                 resultDiv.innerHTML = `
-        //                     <h3>PDF Generated Successfully!</h3>
-        //                     <p><strong>File ID:</strong> ${result.fileID}</p>
-        //                     <p><strong>Title:</strong> ${result.title}</p>
-        //                     <p><strong>Pages:</strong> ${result.page_count || 'N/A'}</p>
-        //                     <p><strong>Size:</strong> ${result.bytes ? Math.round(result.bytes / 1024) + ' KB' : 'N/A'}</p>
-        //                     <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
-        //                     <p><strong>Firebase Path:</strong> ${result.firebase_path}</p>
-        //                 `;
-        //             } else {
-        //                 resultDiv.className = 'error';
-        //                 resultDiv.innerHTML = `
-        //                     <h3>Error Generating PDF</h3>
-        //                     <p>${result.error || 'Unknown error occurred'}</p>
-        //                     ${result.detail ? `<p><strong>Details:</strong> ${result.detail}</p>` : ''}
-        //                 `;
-        //             }
-        //         } catch (error) {
-        //             resultDiv.className = 'error';
-        //             resultDiv.innerHTML = `
-        //                 <h3>Network Error</h3>
-        //                 <p>Failed to connect to the server: ${error.message}</p>
-        //             `;
-        //         }
-        //     });
-        // }
-
         async function generatePDF() {
-            // const data = collectAllFormData();
+            const btn = document.getElementById('modalGenerateBtn');
+
+            btn.classList.add('generating');
+            btn.style.backgroundColor = '#999';
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
             const data = collectFormData();
             
-            const resultDiv = document.getElementById('result');
-            if (!resultDiv) {
-                console.error('Result div not found');
-                alert('Error: Result display area not found');
-                return;
-            }
+            // const resultDiv = document.getElementById('result');
+            // if (!resultDiv) {
+            //     console.error('Result div not found');
+            //     alert('Error: Result display area not found');
+            //     return;
+            // }
             
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = 'Generating PDF...';
-            resultDiv.className = '';
+            // resultDiv.style.display = 'block';
+            // resultDiv.innerHTML = 'Generating PDF...';
+            // resultDiv.className = '';
 
             try {
                 const functionUrl = '/generatePdf';
@@ -965,49 +860,36 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    resultDiv.className = 'success';
-                    resultDiv.innerHTML = `
-                        <h3>PDF Generated Successfully!</h3>
-                        <p><strong>File ID:</strong> ${result.fileID}</p>
-                        <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
-                    `;
+                    // resultDiv.className = 'success';
+                    // resultDiv.innerHTML = `
+                    //     <h3>PDF Generated Successfully!</h3>
+                    //     <p><strong>File ID:</strong> ${result.fileID}</p>
+                    //     <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
+                    // `;
+                    btn.classList.replace('generating', 'success');
+                    btn.style.backgroundColor = '#2196F3';
+                    btn.textContent = 'View';
+                    btn.onclick = () => window.location.href = '/dashb3.html';
+                    btn.disabled = false;
                 } else {
-                    resultDiv.className = 'error';
-                    resultDiv.innerHTML = `<h3>Error: ${result.error || 'Unknown error'}</h3>`;
+                    // resultDiv.className = 'error';
+                    // resultDiv.innerHTML = `<h3>Error: ${result.error || 'Unknown error'}</h3>`;
+                    btn.classList.replace('generating', 'error');
+                    btn.style.backgroundColor = '#ff8b44';
+                    btn.textContent = 'Retry';
+                    btn.onclick = () => window.location.href = '/generatePdf';
+                    btn.disabled = false;
                 }
             } catch (error) {
-                resultDiv.className = 'error';
-                resultDiv.innerHTML = `<h3>Network Error: ${error.message}</h3>`;
+                // resultDiv.className = 'error';
+                // resultDiv.innerHTML = `<h3>Network Error: ${error.message}</h3>`;
+                btn.classList.add('error');
+                btn.style.backgroundColor = '#ff8b44';
+                btn.textContent = 'Retry';
+                btn.onclick = () => window.location.href = '/generatePdf';
+                btn.disabled = false;
             }
         }
-
-        // async function generatePDF() {
-        //     const formData = collectFormData();
-            
-        //     try {
-        //         const response = await fetch('/generate-pdf', {
-        //             method: 'POST',
-        //             headers: { 'Content-Type': 'application/json' },
-        //             body: JSON.stringify(formData)
-        //         });
-                
-        //         if (!response.ok) {
-        //             throw new Error('PDF generation failed');
-        //         }
-                
-        //         const blob = await response.blob();
-        //         const url = window.URL.createObjectURL(blob);
-        //         const a = document.createElement('a');
-        //         a.href = url;
-        //         a.download = (formData.pdfTitle || 'resume') + '.pdf';
-        //         a.click();
-        //         window.URL.revokeObjectURL(url);
-                
-        //     } catch (error) {
-        //         console.error('Error generating PDF:', error);
-        //         alert('Failed to generate PDF. Please try again.');
-        //     }
-        // }
     </script>
 </body>
 </html>
